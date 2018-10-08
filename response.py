@@ -102,8 +102,9 @@ class RedistributionMatrix:
         cdf = self._cdfs[e_bin]
         if cdf[-1] <= 0:
             return None
-        
-        values = np.random.rand(number)
+
+        efficiency = self._efficiency[e_bin]
+        values = np.random.rand(int(number*efficiency))
         value_bins = np.searchsorted(cdf, values)
         return etrue - self._cdf_energies[value_bins]  # Response matrix is Etrue - Edet
 
