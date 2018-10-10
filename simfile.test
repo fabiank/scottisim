@@ -1,8 +1,5 @@
-key1 = True
-key2 = False
-key3 = 3.14
-key4 = "Hello"
-key5 = [ 3, 4, 5 ]
-key6 = [ "Hello", "World" ]
-key7 = [ True, False ]
-key8 = [ 3, "Mixed", False ]
+duration = 1.2
+bins = [ 100, 10.1, 20.1 ]
+spectrum = "spectrum.dat"
+line = [ 1, 2.2 ]
+line = [ 2, 3.3 ]
