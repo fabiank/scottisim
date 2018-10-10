@@ -66,3 +66,6 @@ class SimFile:
                     continue
 
             print 'Error on line %d of input file: invalid value (\'%s\')' % (lc, value)
+
+    def __getitem__(self, key):
+        return self._kvStore[key]
