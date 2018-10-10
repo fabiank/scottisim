@@ -92,10 +92,10 @@ class RedistributionMatrix:
         self._cdf_energies = np.arange(self._measMin + 0.5*bw, self._measMax, step=bw)
 
         # True energy bin width
-        self._true_width = (self._trueMax-self._trueMin)/self._nTrue
+        self.true_width = (self._trueMax-self._trueMin)/self._nTrue
 
     def get_energies(self, etrue, number):
-        e_bin = int(np.floor((etrue - self._trueMin)/self._true_width))
+        e_bin = int(np.floor((etrue - self._trueMin)/self.true_width))
         if e_bin < 0 or e_bin >= self._nTrue:
             return None
 
