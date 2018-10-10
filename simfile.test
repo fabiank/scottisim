@@ -1,0 +1,8 @@
+key1 = True
+key2 = False
+key3 = 3.14
+key4 = "Hello"
+key5 = [ 3, 4, 5 ]
+key6 = [ "Hello", "World" ]
+key7 = [ True, False ]
+key8 = [ 3, "Mixed", False ]
