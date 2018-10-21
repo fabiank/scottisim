@@ -15,11 +15,16 @@ class ContinuumSimulator:
              ]
             
         self._x = np.log10([ x[0] for x in xy ])
-        self._y = np.log10([ bgScale*x[1] for x in xy ])
+        self._y = np.log10([ x[1] for x in xy ])
 
-        self._spline = interp1d(self._x, self._y, kind='cubic')
+        if len(xy) >= 4:
+            self._spline = interp1d(self._x, self._y, kind='cubic', fill_value='extrapolate')
+        else:
+            self._spline = interp1d(self._x, self._y, fill_value='extrapolate')
 
     def generate_events(self, emin, emax, time):
+        import scipy.integrate as integrate
+
         emin = max(emin, 10**self._spline.x[0])
         emax = min(emax, 10**self._spline.x[-1])
 
@@ -29,7 +34,7 @@ class ContinuumSimulator:
         for i in range(1, len(ebins)):
             energy = 0.5*(ebins[i-1]+ebins[i])
             area = self._area.get(energy)
-            nphotons = np.quad(lambda x: 10**self._spline(np.log10(x)), ebins[i-1], ebins) * area * time
+            nphotons = integrate.quad(lambda x: 10**self._spline(np.log10(x)), ebins[i-1], ebins[i])[0] * area * time
             photons = np.append(photons, self._rm.get_energies(energy, nphotons))
 
         return photons
