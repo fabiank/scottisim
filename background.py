@@ -17,12 +17,12 @@ class Background:
         lengthScale = focalLength/nustarLength
         backgroundArea = np.sqrt(36.) # NuSTAR background corresponds to 36arcmin^2
         detectorAreaScale = hpd*hpdFactor/backgroundArea
-        bgScale = lengthScale * detectorAreaScale
+        bgScale = 2 * lengthScale * detectorAreaScale  # Factor 2 bc the NuSTAR numbers are per telescope
             
         self._x = np.log10([ x[0] for x in xy ])
         self._y = np.log10([ bgScale*x[1] for x in xy ])
 
-        self._spline = interp1d(self._x, self._y, kind='cubic')
+        self._spline = interp1d(self._x, self._y, kind='cubic', fill_value='extrapolate')
 
     def draw(self):
         import matplotlib.pyplot as plt
@@ -38,6 +38,7 @@ class Background:
         # Integrate piecewise using spline supports as boundaries
         lmin = np.log10(emin)
         lmax = np.log10(emax)
+        bounds = [lmin]
         imin = None
         imax = None
         for i in range(len(self._spline.x)):
@@ -47,25 +48,20 @@ class Background:
                 imax = i
                 break
 
-        if imin is None:
-            return None
-
-        bounds = self._spline.x[imin:imax]
-        if imin > 0:
-            bounds = np.append([lmin], bounds)
-        if not imax is None:
-            bounds = np.append(bounds, [lmax])
-
+        bounds += list(self._spline.x[imin:imax])
+        bounds.append(lmax)
+            
         total_events = 0.
         for i in range(1, len(bounds)):
-            total_events += integrate.quad(lambda x: 10**self._spline(np.log10(x)), 10**bounds[i-1], 10**bounds[i])[0]
+            te = integrate.quad(lambda x: 10**self._spline(np.log10(x)), 10**bounds[i-1], 10**bounds[i])[0]
+            total_events += te
         total_events = np.random.poisson(total_events * time)
         #print total_events, time*integrate.quad(lambda x: 10**self._spline(np.log10(x)), emin, emax)[0]
 
         xvalues = np.arange(emin, emax, 0.01)  # bin in 10eV steps
         cdf = np.cumsum(10**self._spline(np.log10(xvalues)))
         cdf = cdf/cdf[-1]
-
+        
         values = np.random.rand(total_events)
         value_bins = np.searchsorted(cdf, values)
         return value_bins * 0.01 + emin
