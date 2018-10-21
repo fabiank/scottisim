@@ -12,7 +12,7 @@ class EffectiveArea:
         self._x = np.log10([ x[0] for x in xy ])
         self._y = np.log10([ x[1] for x in xy ])
 
-        self._spline = interp1d(self._x, self._y, kind='cubic')
+        self._spline = interp1d(self._x, self._y, kind='cubic', fill_value='extrapolate')
 
     def draw(self):
         import matplotlib.pyplot as plt
@@ -104,7 +104,8 @@ class RedistributionMatrix:
             return None
 
         efficiency = self._efficiency[e_bin]
-        values = np.random.rand(int(number*efficiency))
+        nphotons = np.random.poisson(number*efficiency)
+        values = np.random.rand(nphotons)
         value_bins = np.searchsorted(cdf, values)
         return etrue - self._cdf_energies[value_bins]  # Response matrix is Etrue - Edet
 
