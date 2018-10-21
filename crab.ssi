@@ -1,0 +1,4 @@
+duration = 1000
+bins = [ 100, 1.8, 99.9 ]
+spectrum = "crab.ssm"
+line = [ 25, 1e-2 ]
